@@ -139,7 +139,7 @@ if __name__ == '__main__':
         outputs = smirk_encoder(cropped_image)
         outputs_cpu = {}
         for k,v in outputs.items():
-            outputs_cpu[k] = v.detach().cpu().numpy().to_list()
+            outputs_cpu[k] = v.detach().cpu().numpy().tolist()
         flame_res.append(outputs_cpu)
         flame_output = flame.forward(outputs)
         renderer_output = renderer.forward(flame_output['vertices'], outputs['cam'],
