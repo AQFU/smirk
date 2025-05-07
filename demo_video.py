@@ -103,7 +103,7 @@ if __name__ == '__main__':
         os.makedirs(args.out_path)
 
     cap_out = cv2.VideoWriter(f"{args.out_path}/{args.input_path.split('/')[-1].split('.')[0]}.mp4", cv2.VideoWriter_fourcc(*'mp4v'), video_fps, (out_width, out_height))
-
+    flame_res = []
     while True:
         ret, image = cap.read()
 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         cropped_image = cropped_image.to(args.device)
 
         outputs = smirk_encoder(cropped_image)
-
+        flame_res.append(outputs)
         flame_output = flame.forward(outputs)
         renderer_output = renderer.forward(flame_output['vertices'], outputs['cam'],
                                             landmarks_fan=flame_output['landmarks_fan'], landmarks_mp=flame_output['landmarks_mp'])
@@ -212,7 +212,10 @@ if __name__ == '__main__':
         grid_numpy = grid_numpy.astype(np.uint8)
         grid_numpy = cv2.cvtColor(grid_numpy, cv2.COLOR_BGR2RGB)
         cap_out.write(grid_numpy)
-
+    json_path = os.path.join(args.out_path, args.input_path.split('/')[-1].split('.')[0] + '.json')
+    import json
+    with open(json_path, 'w') as f:
+        json.dump(flame_res, f)
     cap.release()
     cap_out.release()
 
