@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     smirk_encoder.load_state_dict(checkpoint_encoder)
     smirk_encoder.eval()
-
+    flame_res = []
     if args.use_smirk_generator:
         from src.smirk_generator import SmirkGenerator
         smirk_generator = SmirkGenerator(in_channels=6, out_channels=3, init_features=32, res_blocks=5).to(args.device)
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     cropped_image = cropped_image.to(args.device)
 
     outputs = smirk_encoder(cropped_image)
-
+    flame_res.append(outputs)
 
     flame_output = flame.forward(outputs)
     renderer_output = renderer.forward(flame_output['vertices'], outputs['cam'],
@@ -189,6 +189,9 @@ if __name__ == '__main__':
         os.makedirs(args.out_path)
 
     image_name = args.input_path.split('/')[-1]
-
+    json_name = image_name.split('.')[0] + '.json'
     cv2.imwrite(f"{args.out_path}/{image_name}", grid_numpy)
+    import json
+    with open(f"{args.out_path}/{json_name}", 'w') as f:
+        json.dump(flame_res, f)
 
