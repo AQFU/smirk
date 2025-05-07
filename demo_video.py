@@ -139,8 +139,7 @@ if __name__ == '__main__':
         outputs = smirk_encoder(cropped_image)
         outputs_cpu = {}
         for k,v in outputs.items():
-            if isinstance(v, torch.Tensor):
-                outputs_cpu[k] = v.detach().cpu()
+            outputs_cpu[k] = v.detach().cpu().numpy().to_list()
         flame_res.append(outputs_cpu)
         flame_output = flame.forward(outputs)
         renderer_output = renderer.forward(flame_output['vertices'], outputs['cam'],
@@ -218,7 +217,6 @@ if __name__ == '__main__':
         cap_out.write(grid_numpy)
     json_path = os.path.join(args.out_path, args.input_path.split('/')[-1].split('.')[0] + '.json')
     import json
-    print(flame_res)
     with open(json_path, 'w') as f:
         json.dump(flame_res, f)
     cap.release()
