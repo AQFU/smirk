@@ -137,10 +137,11 @@ if __name__ == '__main__':
         cropped_image = cropped_image.to(args.device)
 
         outputs = smirk_encoder(cropped_image)
+        outputs_cpu = {}
         for k,v in outputs.items():
             if isinstance(v, torch.Tensor):
-                outputs[k] = v.detach().cpu()
-        flame_res.append(outputs)
+                outputs_cpu[k] = v.detach().cpu()
+        flame_res.append(outputs_cpu)
         flame_output = flame.forward(outputs)
         renderer_output = renderer.forward(flame_output['vertices'], outputs['cam'],
                                             landmarks_fan=flame_output['landmarks_fan'], landmarks_mp=flame_output['landmarks_mp'])
